@@ -1,5 +1,6 @@
 import 'package:demo_app/models/category_models.dart';
 import 'package:demo_app/models/diet_model.dart';
+import 'package:demo_app/models/popular_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -14,10 +15,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<CategoryModels> categories = [];
   List<ReadModel> read = [];
+  List<PopularModels> popular = [];
 
   void _getInitialInfo() {
     categories = CategoryModels.getCategories();
     read = ReadModel.getread();
+    popular = PopularModels.getPopularModela();
   }
 
   Container _searchField() {
@@ -173,8 +176,8 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       backgroundColor: Colors.white,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: ListView(
+        //crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _searchField(),
           const SizedBox(
@@ -184,100 +187,199 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(
             height: 40,
           ),
+          _recommadation(),
+          const SizedBox(
+            height: 40,
+          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Padding(
                 padding: EdgeInsets.only(left: 20),
                 child: Text(
-                  'Recommendation\nfor reading',
+                  'Popular',
                   style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                  ),
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700),
                 ),
               ),
               const SizedBox(
                 height: 15,
               ),
-              // ignore: sized_box_for_whitespace
-              Container(
-                //color: Colors.lightBlue,
-                height: 210,
-                child: ListView.separated(
-                  itemBuilder: (context, index) {
-                    return Container(
-                      width: 205,
-                      decoration: BoxDecoration(
-                        color: read[index].boxColor.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Container(
-                              width: 100,
-                              height: 70,
-                              decoration: const BoxDecoration(
-                                  //color: Colors.white,
-                                  shape: BoxShape.rectangle),
-                              child: SvgPicture.asset(read[index].iconPath),
+              ListView.separated(
+                //scrollDirection: Axis.horizontal,
+                itemCount: popular.length,
+                shrinkWrap: true,
+                // scrollDirection: Axis.vertical,
+                separatorBuilder: (context, index) => const SizedBox(
+                  height: 35,
+                ),
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    height: 100,
+                    decoration: BoxDecoration(
+                        color: read[index].boxColor.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(40),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF000000).withOpacity(0.07),
+                            offset: const Offset(
+                              0,
+                              30,
                             ),
-                            Text(read[index].name,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                )),
+                            blurRadius: 40,
+                            spreadRadius: 0,
+                          )
+                        ]),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 100,
+                          height: 50,
+                          child: SvgPicture.asset(
+                            popular[index].iconPath,
+                            width: 65,
+                            height: 65,
+                          ),
+
+                          //  Column(),
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Text(
-                              '${read[index].level} | ${read[index].duration}|${read[index].read}',
+                              popular[index].name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w900,
+                                color: Colors.black,
+                                fontSize: 20,
+                              ),
+                            ),
+                            Text(
+                              '${popular[index].level} | ${popular[index].duration}|${popular[index].read}',
                               style: const TextStyle(
                                 color: Color(0xff7B6F72),
+                                fontStyle: FontStyle.italic,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
-                            Container(
-                              height: 45,
-                              width: 130,
-                              decoration: BoxDecoration(
-                                  gradient: const LinearGradient(colors: [
-                                    Color(0xff9DCEFF),
-                                    Color(0xff92A3FD),
-                                  ]),
-                                  borderRadius: BorderRadius.circular(50)),
-                              child: const Center(
-                                child: Text(
-                                  'view',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ),
-                            )
-                          ]),
-                    );
-                  },
-                  // ignore: prefer_const_constructors
-                  separatorBuilder: (context, index) => SizedBox(
-                    width: 25,
-                  ),
-                  itemCount: read.length,
-                  scrollDirection: Axis.horizontal,
-                  // ignore: prefer_const_constructors
-                  padding: EdgeInsets.only(
-                    left: 20,
-                    right: 20,
-                  ),
-                ),
-              )
+                          ],
+                        ),
+                        // GestureDetector(
+                        //   onTap: () {},
+                        //   child: SvgPicture.asset(
+                        //     'assets/icons/book.svg',
+                        //     width: 30,
+                        //     height: 30,
+                        //   ),
+                        // )
+                      ],
+                    ),
+                  );
+                },
+              ),
             ],
           )
         ],
       ),
+    );
+  }
+
+  Column _recommadation() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 20),
+          child: Text(
+            'Recommendation\nfor reading',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 15,
+        ),
+        // ignore: sized_box_for_whitespace
+        Container(
+          //color: Colors.lightBlue,
+          height: 210,
+          child: ListView.separated(
+            itemBuilder: (context, index) {
+              return Container(
+                width: 205,
+                decoration: BoxDecoration(
+                  color: read[index].boxColor.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 70,
+                        decoration: const BoxDecoration(
+                            //color: Colors.white,
+                            shape: BoxShape.rectangle),
+                        child: SvgPicture.asset(read[index].iconPath),
+                      ),
+                      Text(read[index].name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
+                            fontSize: 20,
+                          )),
+                      Text(
+                        '${read[index].level} | ${read[index].duration}|${read[index].read}',
+                        style: const TextStyle(
+                          color: Color(0xff7B6F72),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      Container(
+                        height: 45,
+                        width: 130,
+                        decoration: BoxDecoration(
+                            gradient: const LinearGradient(colors: [
+                              Color(0xff9DCEFF),
+                              Color(0xff92A3FD),
+                            ]),
+                            borderRadius: BorderRadius.circular(50)),
+                        child: const Center(
+                          child: Text(
+                            'view',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                      )
+                    ]),
+              );
+            },
+            // ignore: prefer_const_constructors
+            separatorBuilder: (context, index) => SizedBox(
+              width: 25,
+            ),
+            itemCount: read.length,
+            scrollDirection: Axis.horizontal,
+            // ignore: prefer_const_constructors
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20,
+            ),
+          ),
+        )
+      ],
     );
   }
 }
